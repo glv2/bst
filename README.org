@@ -1,0 +1,184 @@
+#+TITLE: BST
+#+AUTHOR: Guillaume LE VAILLANT
+#+DATE: 2017-06-16
+#+EMAIL: glv@posteo.net
+#+LANGUAGE: en
+#+OPTIONS: num:nil toc:nil html-postamble:nil html-scripts:nil
+#+HTML_DOCTYPE: html5
+
+* Description
+
+*BST* is a Common Lisp library for working with binary search trees that
+can contain any kind of values.
+
+* License
+
+*BST* is released under the GPL-3 license. See the [[file:LICENSE][LICENSE]] file for details.
+
+* API
+** Values
+
+By default, the library is set to work with trees containing numbers.
+
+To work with another type of values, the parameters
+~*bst-copy-function*~, ~*bst-equal-p-function*~ and
+~*bst-lesser-p-function*~ must be set or bound.
+
+~*bst-copy-function*~ should be a function to use instead of
+~identity~ to make a copy of a value.
+
+~*bst-equal-p-function*~ should be a function to use instead of ~=~ to
+check if two values of a tree are equal.
+
+~*bst-lesser-p-function*~ should be a function to use instead ot ~<~
+to check if a value of a tree is lesser than another.
+
+#+BEGIN_SRC lisp
+(bst-copy value) => value
+#+END_SRC
+
+Make a copy of /value/ using ~*bst-copy-function*~ if defined or
+~identity~ otherwise.
+
+#+BEGIN_SRC lisp
+(bst-equal-p value1 value2) => boolean
+#+END_SRC
+
+Check if /value1/ and /value2/ are equal using
+~*bst-equal-p-function*~ if defined or ~=~ otherwise.
+
+#+BEGIN_SRC lisp
+(bst-lesser-p value1 value2) => boolean
+#+END_SRC
+
+Check if /value1/ is lesser than /value2/ using
+~*bst-lesser-p-function*~ if defined or ~<~ otherwise.
+
+** Trees
+
+#+BEGIN_SRC lisp
++bst-empty+
+#+END_SRC
+
+~+bst-empty+~ represents the empty tree.
+
+#+BEGIN_SRC lisp
+(bst-empty-p tree) => boolean
+#+END_SRC
+
+Check wether a /tree/ is empty or not.
+
+#+BEGIN_SRC lisp
+(bst-add tree value) => tree
+(bst-add! tree value) => tree
+#+END_SRC
+
+Insert a /value/ in a /tree/. ~bst-add!~ is the destructive version of
+~bst-add~ (it can destroy the /tree/ passed as argument and take parts
+of it to build the result).
+
+#+BEGIN_SRC lisp
+(bst-from-values values) => tree
+#+END_SRC
+
+Build a tree containing the /values/ passed as argument. /values/ must
+be a sequence.
+
+#+BEGIN_SRC lisp
+(bst-remove tree value) => tree
+(bst-remove! tree value) => tree
+#+END_SRC
+
+Remove a /value/ from a /tree/. ~bst-remove!~ is the destructive
+version of ~bst-remove~.
+
+#+BEGIN_SRC lisp
+(bst-balance tree) => tree
+(bst-balance! tree) => tree
+#+END_SRC
+
+Balance a /tree/ to make searches more efficient. ~bst-balance!~ is
+the destructive version of ~bst-balance~.
+
+#+BEGIN_SRC lisp
+(bst-search tree value) => value, value-p
+#+END_SRC
+
+Search a /value/ in a /tree/. The first returned value is /value/ if
+it was found in the /tree/ and ~nil~ otherwise. The second returned
+value is ~t~ if the value was found and ~nil~ otherwise.
+
+#+BEGIN_SRC lisp
+(bst-count tree) => integer
+#+END_SRC
+
+Return the number of values in a /tree/.
+
+#+BEGIN_SRC lisp
+(bst-max-depth tree) => integer
+(bst-min-depth tree) => integer
+#+END_SRC
+
+Return the maximum or minimum depth of nodes in a /tree/.
+
+#+BEGIN_SRC lisp
+(bst-tree-copy tree) => tree
+#+END_SRC
+
+Make a copy of a /tree/.
+
+#+BEGIN_SRC lisp
+(bst-tree-equal-p tree1 tree2) => boolean
+#+END_SRC
+
+Check if two trees have the same structure (nodes and edges).
+
+#+BEGIN_SRC lisp
+(bst-values tree) => vector
+#+END_SRC
+
+Return a /vector/ containing the sorted values of a /tree/.
+
+#+BEGIN_SRC lisp
+(bst-values-equal-p tree1 tree2) => boolean
+#+END_SRC
+
+Check if two trees contain the same values (even if they have
+different structures).
+
+* Examples
+
+Tree using integer values:
+
+#+BEGIN_SRC lisp
+(defvar tree (bst:bst-from-values '(1 2 3 4)))
+(setf tree (bst:bst-add tree 5))
+(setf tree (bst:bst-remove tree 3))
+
+(bst:bst-search tree 2)
+2
+T
+
+(bst:bst-search tree 3)
+NIL
+NIL
+#+END_SRC
+
+Tree using string values:
+
+#+BEGIN_SRC lisp
+(let* ((bst:*bst-copy-function* #'copy-seq)
+       (bst:*bst-equal-p-function* #'string=)
+       (bst:*bst-lesser-p-function* #'string<)
+       (tree (bst:bst-balance (bst:bst-from-values '("one" "two" "three")))))
+  (bst:bst-count tree))
+3
+#+END_SRC
+
+* Tests
+
+The tests require the *FiveAM* package. They can be run with:
+
+#+BEGIN_SRC lisp
+(asdf:oos 'test-op 'bst)
+#+END_SRC
