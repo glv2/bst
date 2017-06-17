@@ -119,7 +119,7 @@ Return the number of values in a /tree/.
 (bst-min-depth tree) => integer
 #+END_SRC
 
-Return the maximum or minimum depth of nodes in a /tree/.
+Return the maximum or minimum depth of leaf nodes in a /tree/.
 
 #+BEGIN_SRC lisp
 (bst-tree-copy tree) => tree
