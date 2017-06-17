@@ -124,13 +124,17 @@ otherwise return NIL and NIL."
 (defun bst-add! (tree value)
   "Insert a VALUE in a TREE. The TREE argument is destroyed."
   (labels ((add (tree value)
-             (if (bst-lesser-p value (bst-value tree))
-                 (if (bst-empty-p (bst-left tree))
-                     (setf (bst-left tree) (make-bst :value value))
-                     (add (bst-left tree) value))
+             (cond
+               ((bst-equal-p value (bst-value tree))
+                tree)
+               ((bst-lesser-p value (bst-value tree))
+                (if (bst-empty-p (bst-left tree))
+                    (setf (bst-left tree) (make-bst :value value))
+                    (add (bst-left tree) value)))
+                (t
                  (if (bst-empty-p (bst-right tree))
                      (setf (bst-right tree) (make-bst :value value))
-                     (add (bst-right tree) value)))))
+                     (add (bst-right tree) value))))))
     (if (bst-empty-p tree)
         (make-bst :value value)
         (progn

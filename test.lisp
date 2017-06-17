@@ -62,7 +62,8 @@
       (is (bst-tree-equal-p (make-bst :value 2
                                       :left (make-bst :value 1)
                                       :right (make-bst :value 3))
-                            (bst-add (bst-add (bst-add +bst-empty+ 2) 1) 3))))
+                            (bst-add (bst-add (bst-add +bst-empty+ 2) 1) 3)))
+      (is (= 6 (bst-count (bst-add (bst-from-values '(4 2 5 3 1 6)) 5)))))
 
 (test bst-remove
       (is-true (bst-empty-p (bst-remove +bst-empty+ 10)))

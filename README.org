@@ -73,9 +73,10 @@ Check wether a /tree/ is empty or not.
 (bst-add! tree value) => tree
 #+END_SRC
 
-Insert a /value/ in a /tree/. ~bst-add!~ is the destructive version of
-~bst-add~ (it can destroy the /tree/ passed as argument and take parts
-of it to build the result).
+Insert a /value/ in a /tree/. If the /value/ is already in the /tree/,
+the insertion has no effect (duplicates are discarded). ~bst-add!~ is
+the destructive version of ~bst-add~ (it can destroy the /tree/ passed
+as argument and take parts of it to build the result).
 
 #+BEGIN_SRC lisp
 (bst-from-values values) => tree
