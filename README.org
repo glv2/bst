@@ -1,6 +1,6 @@
 #+TITLE: BST
 #+AUTHOR: Guillaume LE VAILLANT
-#+DATE: 2017-06-16
+#+DATE: 2017-06-18
 #+EMAIL: glv@posteo.net
 #+LANGUAGE: en
 #+OPTIONS: num:nil toc:nil html-postamble:nil html-scripts:nil
@@ -76,14 +76,15 @@ Check wether a /tree/ is empty or not.
 Insert a /value/ in a /tree/. If the /value/ is already in the /tree/,
 the insertion has no effect (duplicates are discarded). ~bst-add!~ is
 the destructive version of ~bst-add~ (it can destroy the /tree/ passed
-as argument and take parts of it to build the result).
+as argument and take parts of it to build the result, and it inserts
+the /value/ as is instead of inserting a copy of it).
 
 #+BEGIN_SRC lisp
 (bst-from-values values) => tree
 #+END_SRC
 
 Build a tree containing the /values/ passed as argument. /values/ must
-be a sequence.
+be a sequence. ~bst-from-values~ uses ~bst-add!~ to build the tree.
 
 #+BEGIN_SRC lisp
 (bst-remove tree value) => tree

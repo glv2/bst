@@ -143,7 +143,7 @@ otherwise return NIL and NIL."
 
 (defun bst-add (tree value)
   "Insert a VALUE in a TREE."
-  (bst-add! (bst-tree-copy tree) value))
+  (bst-add! (bst-tree-copy tree) (bst-copy value)))
 
 (defun bst-remove! (tree value)
   "Delete a VALUE from a TREE. The TREE argument is destroyed."
