@@ -213,7 +213,7 @@ otherwise return NIL and NIL."
   (let ((values1 (bst-values tree1))
         (values2 (bst-values tree2)))
     (and (= (length values1) (length values2))
-         (every #'bst-equal-p tree1 tree2))))
+         (every #'bst-equal-p values1 values2))))
 
 (defun bst-balance! (tree)
   "Balance a TREE. The TREE argument is destroyed."
