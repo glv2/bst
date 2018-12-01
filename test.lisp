@@ -21,33 +21,63 @@
 
 (test bst-search
   (let ((tree (bst-from-values '(3 2 1 4 5 6 7 8 9))))
-    (is (bst-equal-p (bst-search tree 1) 1))
-    (is (bst-equal-p (bst-search tree 3) 3))
-    (is (bst-equal-p (bst-search tree 8) 8))
-    (is (bst-equal-p (bst-search tree 9) 9))
+    (is (bst-equal-p 1 (bst-search tree 1)))
+    (is (bst-equal-p 3 (bst-search tree 3)))
+    (is (bst-equal-p 8 (bst-search tree 8)))
+    (is (bst-equal-p 9 (bst-search tree 9)))
     (is-false (bst-search tree 0))
     (is-false (bst-search tree 10))
-    (is-false (bst-search tree 61))))
+    (is-false (bst-search tree 61)))
+  (let* ((*bst-copy-function* #'copy-seq)
+         (*bst-equal-p-function* #'string=)
+         (*bst-lesser-p-function* #'string<)
+         (tree (bst-from-values '("def" "abc" "xyz" "ijk"))))
+    (is (bst-equal-p "abc" (bst-search tree "abc")))
+    (is (bst-equal-p "def" (bst-search tree "def")))
+    (is (bst-equal-p "ijk" (bst-search tree "ijk")))
+    (is (bst-equal-p "xyz" (bst-search tree "xyz")))
+    (is-false (bst-search tree "bcd"))
+    (is-false (bst-search tree "uvw"))
+    (is-false (bst-search tree "zyx"))))
 
 (test bst-max-value
-  (let ((tree (bst-from-values '(10 5 20 2 3 12 13 22 23))))
-    (is (= 23 (bst-max-value tree)))))
+  (is-false (bst-max-value +bst-empty+))
+  (is (= 23 (bst-max-value (bst-from-values '(10 5 20 2 3 12 13 22 23)))))
+  (let* ((*bst-copy-function* #'copy-seq)
+         (*bst-equal-p-function* #'string=)
+         (*bst-lesser-p-function* #'string<)
+         (tree (bst-from-values '("def" "abc" "xyz" "ijk"))))
+    (is (bst-equal-p "xyz" (bst-max-value tree)))))
 
 (test bst-min-value
-  (let ((tree (bst-from-values '(10 5 20 2 3 12 13 22 23))))
-    (is (= 2 (bst-min-value tree)))))
+  (is-false (bst-min-value +bst-empty+))
+  (is (= 2 (bst-min-value (bst-from-values '(10 5 20 2 3 12 13 22 23)))))
+  (let* ((*bst-copy-function* #'copy-seq)
+         (*bst-equal-p-function* #'string=)
+         (*bst-lesser-p-function* #'string<)
+         (tree (bst-from-values '("def" "abc" "xyz" "ijk"))))
+    (is (bst-equal-p "abc" (bst-min-value tree)))))
 
 (test bst-count
   (is (= 0 (bst-count +bst-empty+)))
   (is (= 1 (bst-count (bst-from-values '(3)))))
   (is (= 5 (bst-count (bst-from-values '(1 2 3 4 5)))))
-  (is (= 9 (bst-count (bst-from-values '(1 2 3 4 5 6 7 8 9))))))
+  (is (= 9 (bst-count (bst-from-values '(1 2 3 4 5 6 7 8 9)))))
+  (let* ((*bst-copy-function* #'copy-seq)
+         (*bst-equal-p-function* #'string=)
+         (*bst-lesser-p-function* #'string<)
+         (tree (bst-from-values '("def" "abc" "xyz" "ijk"))))
+    (is (= 4 (bst-count tree)))))
 
 (test bst-max-depth
+  (is (= 0 (bst-max-depth +bst-empty+)))
+  (is (= 1 (bst-max-depth (bst-from-values '(5)))))
   (let ((tree (bst-add (bst-add (bst-add (bst-add +bst-empty+ 2) 3) 4) 1)))
     (is (= 3 (bst-max-depth tree)))))
 
 (test bst-min-depth
+  (is (= 0 (bst-min-depth +bst-empty+)))
+  (is (= 1 (bst-min-depth (bst-from-values '(5)))))
   (let ((tree (bst-add (bst-add (bst-add (bst-add +bst-empty+ 2) 3) 4) 1)))
     (is (= 2 (bst-min-depth tree)))))
 
@@ -55,10 +85,17 @@
   (is (bst-tree-equal-p (bst-from-values '(3 2 1 4 5 6))
                         (bst-from-values '(3 2 1 4 5 6))))
   (is-false (bst-tree-equal-p (bst-from-values '(3 2 1 4 5 6))
+                              (bst-from-values '(3 2 1 4 5 7))))
+  (is-false (bst-tree-equal-p (bst-from-values '(3 2 1 4 5 6))
                               (bst-from-values '(3 1 2 4 5 6)))))
 
 (test bst-tree-copy
   (let ((tree (bst-from-values '(3 2 1 4 5 6 7 8 9))))
+    (is (bst-tree-equal-p tree (bst-tree-copy tree))))
+  (let* ((*bst-copy-function* #'copy-seq)
+         (*bst-equal-p-function* #'string=)
+         (*bst-lesser-p-function* #'string<)
+         (tree (bst-from-values '("def" "abc" "xyz" "ijk"))))
     (is (bst-tree-equal-p tree (bst-tree-copy tree)))))
 
 (test bst-add
@@ -71,7 +108,13 @@
                                   :left (make-bst :value 1)
                                   :right (make-bst :value 3))
                         (bst-add (bst-add (bst-add +bst-empty+ 2) 1) 3)))
-  (is (= 6 (bst-count (bst-add (bst-from-values '(4 2 5 3 1 6)) 5)))))
+  (is (= 6 (bst-count (bst-add (bst-from-values '(4 2 5 3 1 6)) 5))))
+  (let* ((*bst-copy-function* #'copy-seq)
+         (*bst-equal-p-function* #'string=)
+         (*bst-lesser-p-function* #'string<)
+         (tree (bst-from-values '("def" "abc" "xyz" "ijk"))))
+    (is (bst-tree-equal-p tree (bst-add tree "abc")))
+    (is (= 5 (bst-count (bst-add tree "uvw"))))))
 
 (test bst-remove
   (is-true (bst-empty-p (bst-remove +bst-empty+ 10)))
@@ -84,7 +127,13 @@
                         (bst-remove (bst-from-values '(2 1 3)) 3)))
   (is (bst-tree-equal-p (make-bst :value 3
                                   :left (make-bst :value 1))
-                        (bst-remove (bst-from-values '(2 1 3)) 2))))
+                        (bst-remove (bst-from-values '(2 1 3)) 2)))
+  (let* ((*bst-copy-function* #'copy-seq)
+         (*bst-equal-p-function* #'string=)
+         (*bst-lesser-p-function* #'string<)
+         (tree (bst-from-values '("def" "abc" "xyz" "ijk"))))
+    (is (= 3 (bst-count (bst-remove tree "xyz"))))
+    (is (bst-tree-equal-p tree (bst-remove tree "uvw")))))
 
 (test bst-values
   (flet ((vector-equal (v1 v2)
@@ -92,18 +141,36 @@
     (is (vector-equal #() (bst-values +bst-empty+)))
     (is (vector-equal #(1) (bst-values (bst-from-values '(1)))))
     (is (vector-equal #(1 2 3 4 5 6)
-                      (bst-values (bst-from-values '(1 6 2 3 5 4)))))))
+                      (bst-values (bst-from-values '(1 6 2 3 5 4)))))
+    (let* ((*bst-copy-function* #'copy-seq)
+           (*bst-equal-p-function* #'string=)
+           (*bst-lesser-p-function* #'string<)
+           (tree (bst-from-values '("def" "abc" "xyz" "ijk"))))
+      (is (vector-equal #("abc" "def" "ijk" "xyz") (bst-values tree))))))
 
 (test bst-from-values
   (is (bst-tree-equal-p (make-bst :value 2
                                   :left (make-bst :value 1)
                                   :right (make-bst :value 3
                                                    :right (make-bst :value 4)))
-                        (bst-from-values '(2 1 3 4)))))
+                        (bst-from-values '(2 1 3 4))))
+  (let* ((*bst-copy-function* #'copy-seq)
+         (*bst-equal-p-function* #'string=)
+         (*bst-lesser-p-function* #'string<))
+    (is (bst-tree-equal-p (make-bst :value "def"
+                                    :left (make-bst :value "abc")
+                                    :right (make-bst :value "xyz"
+                                                     :left (make-bst :value "ijk")))
+                          (bst-from-values '("def" "abc" "xyz" "ijk"))))))
 
 (test bst-values-equal-p
   (is (bst-values-equal-p (bst-from-values '(1 2 5 4 3))
-                          (bst-from-values '(3 1 2 4 5)))))
+                          (bst-from-values '(3 1 2 4 5))))
+  (let* ((*bst-copy-function* #'copy-seq)
+         (*bst-equal-p-function* #'string=)
+         (*bst-lesser-p-function* #'string<))
+    (is (bst-values-equal-p (bst-from-values '("a" "b" "c"))
+                            (bst-from-values '("b" "a" "c"))))))
 
 (test bst-balance
   (is (bst-tree-equal-p (make-bst :value 2
@@ -121,12 +188,12 @@
   (let ((*bst-copy-function* #'copy-seq)
         (*bst-equal-p-function* #'string=)
         (*bst-lesser-p-function* #'string<))
-    (is (bst-tree-equal-p (make-bst :value "medium"
+    (is (bst-tree-equal-p (make-bst :value "many"
                                     :left (make-bst :value "less"
                                                     :left (make-bst :value "few")
                                                     :right (make-bst :value "loop"))
                                     :right (make-bst :value "more"
-                                                     :left (make-bst :value "many")
+                                                     :left (make-bst :value "medium")
                                                      :right (make-bst :value "zillion")))
                           (bst-balance (bst-from-values '("few"
                                                           "less"
