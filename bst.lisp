@@ -98,20 +98,22 @@ otherwise return NIL and NIL."
 otherwise return NIL and NIL."
   (if (bst-empty-p tree)
       (values nil nil)
-      (values (if (bst-empty-p (bst-right tree))
-                  (bst-value tree)
-                  (bst-max-value (bst-right tree)))
-              t)))
+      (let* ((right (bst-right tree))
+             (value (if (bst-empty-p right)
+                        (bst-value tree)
+                        (bst-max-value right))))
+        (values value t))))
 
 (defun bst-min-value (tree)
   "If TREE is not empty, return its minimum value and T,
 otherwise return NIL and NIL."
   (if (bst-empty-p tree)
       (values nil nil)
-      (values (if (bst-empty-p (bst-left tree))
-                  (bst-value tree)
-                  (bst-min-value (bst-left tree)))
-              t)))
+      (let* ((left (bst-left tree))
+             (value (if (bst-empty-p left)
+                        (bst-value tree)
+                        (bst-min-value left))))
+        (values value t))))
 
 (defun bst-count (tree)
   "Return the number of nodes in a TREE."
@@ -167,40 +169,29 @@ otherwise return NIL and NIL."
 (defun bst-remove! (tree value)
   "Delete a VALUE from a TREE. The TREE argument is destroyed."
   (labels ((remove-value (tree value parent)
-             (let ((left (bst-left tree))
-                   (right (bst-right tree)))
-               (if (bst-equal-p value (bst-value tree))
+             (let* ((tree-value (bst-value tree))
+                    (left (bst-left tree))
+                    (left-empty-p (bst-empty-p left))
+                    (right (bst-right tree))
+                    (right-empty-p (bst-empty-p right)))
+               (if (bst-equal-p value tree-value)
                    (cond
-                     ((and (not (bst-empty-p left))
-                           (not (bst-empty-p right)))
+                     ((not (or left-empty-p right-empty-p))
                       (let ((min-value (bst-min-value right)))
                         (setf (bst-value tree) min-value)
                         (remove-value right min-value tree)))
                      ((eq tree (bst-left parent))
-                      (setf (bst-left parent) (if (bst-empty-p left)
-                                                  right
-                                                  left)))
+                      (setf (bst-left parent) (if left-empty-p right left)))
                      ((eq tree (bst-right parent))
-                      (setf (bst-right parent) (if (bst-empty-p left)
-                                                   right
-                                                   left))))
-                   (let ((child (if (bst-lesser-p value (bst-value tree))
-                                    left
-                                    right)))
+                      (setf (bst-right parent) (if left-empty-p right left))))
+                   (let ((child (if (bst-lesser-p value tree-value) left right)))
                      (unless (bst-empty-p child)
                        (remove-value child value tree)))))))
     (if (bst-empty-p tree)
         +bst-empty+
-        (let ((tmp (make-bst :value 0 :left tree)))
-          (remove-value tree value tmp)
-          (let ((tmp (bst-left tmp)))
-            (if (bst-empty-p tmp)
-                +bst-empty+
-                (progn
-                  (setf (bst-value tree) (bst-value tmp)
-                        (bst-left tree) (bst-left tmp)
-                        (bst-right tree) (bst-right tmp))
-                  tree)))))))
+        (let ((parent (make-bst :value 0 :left tree)))
+          (remove-value tree value parent)
+          (bst-left parent)))))
 
 (defun bst-remove (tree value)
   "Delete a VALUE from a TREE."
