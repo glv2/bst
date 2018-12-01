@@ -192,5 +192,5 @@ Tree using string values:
 The tests require the *FiveAM* package. They can be run with:
 
 #+BEGIN_SRC lisp
-(asdf:oos 'test-op 'bst)
+(asdf:test-system "bst")
 #+END_SRC
