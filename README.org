@@ -1,6 +1,6 @@
 #+TITLE: BST
 #+AUTHOR: Guillaume LE VAILLANT
-#+DATE: 2017-06-18
+#+DATE: 2018-12-01
 #+EMAIL: glv@posteo.net
 #+LANGUAGE: en
 #+OPTIONS: num:nil toc:nil html-postamble:nil html-scripts:nil
@@ -109,6 +109,16 @@ the destructive version of ~bst-balance~.
 Search a /value/ in a /tree/. The first returned value is /value/ if
 it was found in the /tree/ and ~nil~ otherwise. The second returned
 value is ~t~ if the value was found and ~nil~ otherwise.
+
+#+BEGIN_SRC lisp
+(bst-max-value tree) => value, value-p
+(bst-min-value tree) => value, value-p
+#+END_SRC
+
+Search the maximum or minimum value in a /tree/. The first returned
+value is the found maximum or minimum, or ~nil~ it the /tree/ is
+empty. The second returned value is ~nil~ if the /tree/ is empty
+and ~t~ otherwise.
 
 #+BEGIN_SRC lisp
 (bst-count tree) => integer

@@ -19,7 +19,9 @@
            #:bst-from-values
            #:bst-lesser-p
            #:bst-max-depth
+           #:bst-max-value
            #:bst-min-depth
+           #:bst-min-value
            #:bst-remove
            #:bst-remove!
            #:bst-search
@@ -91,6 +93,26 @@ otherwise return NIL and NIL."
       (values value t)
       (values nil nil)))
 
+(defun bst-max-value (tree)
+  "If TREE is not empty, return its maximum value and T,
+otherwise return NIL and NIL."
+  (if (bst-empty-p tree)
+      (values nil nil)
+      (values (if (bst-empty-p (bst-right tree))
+                  (bst-value tree)
+                  (bst-max-value (bst-right tree)))
+              t)))
+
+(defun bst-min-value (tree)
+  "If TREE is not empty, return its minimum value and T,
+otherwise return NIL and NIL."
+  (if (bst-empty-p tree)
+      (values nil nil)
+      (values (if (bst-empty-p (bst-left tree))
+                  (bst-value tree)
+                  (bst-min-value (bst-left tree)))
+              t)))
+
 (defun bst-count (tree)
   "Return the number of nodes in a TREE."
   (if (bst-empty-p tree)
@@ -144,18 +166,14 @@ otherwise return NIL and NIL."
 
 (defun bst-remove! (tree value)
   "Delete a VALUE from a TREE. The TREE argument is destroyed."
-  (labels ((min-value (tree)
-             (if (bst-empty-p (bst-left tree))
-                 (bst-value tree)
-                 (min-value (bst-left tree))))
-           (remove-value (tree value parent)
+  (labels ((remove-value (tree value parent)
              (let ((left (bst-left tree))
                    (right (bst-right tree)))
                (if (bst-equal-p value (bst-value tree))
                    (cond
                      ((and (not (bst-empty-p left))
                            (not (bst-empty-p right)))
-                      (let ((min-value (min-value right)))
+                      (let ((min-value (bst-min-value right)))
                         (setf (bst-value tree) min-value)
                         (remove-value right min-value tree)))
                      ((eq tree (bst-left parent))

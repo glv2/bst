@@ -29,6 +29,14 @@
     (is-false (bst-search tree 10))
     (is-false (bst-search tree 61))))
 
+(test bst-max-value
+  (let ((tree (bst-from-values '(10 5 20 2 3 12 13 22 23))))
+    (is (= 23 (bst-max-value tree)))))
+
+(test bst-min-value
+  (let ((tree (bst-from-values '(10 5 20 2 3 12 13 22 23))))
+    (is (= 2 (bst-min-value tree)))))
+
 (test bst-count
   (is (= 0 (bst-count +bst-empty+)))
   (is (= 1 (bst-count (bst-from-values '(3)))))
