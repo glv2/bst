@@ -1,34 +1,34 @@
 ;;; This library implements a binary search tree.
-;;; Copyright 2017 Guillaume LE VAILLANT
+;;; Copyright 2017-2018 Guillaume LE VAILLANT
 ;;; This library is free software released under the GNU GPL-3 license.
 
-(defpackage bst
-  (:use cl)
-  (:export *bst-copy-function*
-           *bst-equal-p-function*
-           *bst-lesser-p-function*
-           +bst-empty+
-           bst-add
-           bst-add!
-           bst-balance
-           bst-balance!
-           bst-copy
-           bst-count
-           bst-empty-p
-           bst-equal-p
-           bst-from-values
-           bst-lesser-p
-           bst-max-depth
-           bst-min-depth
-           bst-remove
-           bst-remove!
-           bst-search
-           bst-tree-copy
-           bst-tree-equal-p
-           bst-values
-           bst-values-equal-p))
+(defpackage :bst
+  (:use :cl)
+  (:export #:*bst-copy-function*
+           #:*bst-equal-p-function*
+           #:*bst-lesser-p-function*
+           #:+bst-empty+
+           #:bst-add
+           #:bst-add!
+           #:bst-balance
+           #:bst-balance!
+           #:bst-copy
+           #:bst-count
+           #:bst-empty-p
+           #:bst-equal-p
+           #:bst-from-values
+           #:bst-lesser-p
+           #:bst-max-depth
+           #:bst-min-depth
+           #:bst-remove
+           #:bst-remove!
+           #:bst-search
+           #:bst-tree-copy
+           #:bst-tree-equal-p
+           #:bst-values
+           #:bst-values-equal-p))
 
-(in-package bst)
+(in-package :bst)
 
 
 (defparameter *bst-copy-function* nil
@@ -124,17 +124,14 @@ otherwise return NIL and NIL."
 (defun bst-add! (tree value)
   "Insert a VALUE in a TREE. The TREE argument is destroyed."
   (labels ((add (tree value)
-             (cond
-               ((bst-equal-p value (bst-value tree))
-                tree)
-               ((bst-lesser-p value (bst-value tree))
-                (if (bst-empty-p (bst-left tree))
-                    (setf (bst-left tree) (make-bst :value value))
-                    (add (bst-left tree) value)))
-                (t
-                 (if (bst-empty-p (bst-right tree))
-                     (setf (bst-right tree) (make-bst :value value))
-                     (add (bst-right tree) value))))))
+             (unless (bst-equal-p value (bst-value tree))
+               (if (bst-lesser-p value (bst-value tree))
+                   (if (bst-empty-p (bst-left tree))
+                       (setf (bst-left tree) (make-bst :value value))
+                       (add (bst-left tree) value))
+                   (if (bst-empty-p (bst-right tree))
+                       (setf (bst-right tree) (make-bst :value value))
+                       (add (bst-right tree) value))))))
     (if (bst-empty-p tree)
         (make-bst :value value)
         (progn
@@ -225,9 +222,9 @@ otherwise return NIL and NIL."
                  tree
                  (let* ((middle (+ start (floor (- end start) 2)))
                         (median (aref values middle))
-                        (tree1 (bst-add! tree median))
-                        (tree2 (insert-values tree1 values start middle)))
-                   (insert-values tree2 values (1+ middle) end)))))
+                        (tree (bst-add! tree median))
+                        (tree (insert-values tree values start middle)))
+                   (insert-values tree values (1+ middle) end)))))
     (let ((values (bst-values tree)))
       (insert-values +bst-empty+ values 0 (length values)))))
 
