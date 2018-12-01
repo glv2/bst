@@ -79,7 +79,7 @@ lesser than another.")
   (or (and (bst-empty-p tree1) (bst-empty-p tree2))
       (and (not (bst-empty-p tree1))
            (not (bst-empty-p tree2))
-           (bst-equal-p (bst-value tree1) (bst-value tree1))
+           (bst-equal-p (bst-value tree1) (bst-value tree2))
            (bst-tree-equal-p (bst-left tree1) (bst-left tree2))
            (bst-tree-equal-p (bst-right tree1) (bst-right tree2)))))
 
