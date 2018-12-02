@@ -153,7 +153,7 @@
                                   :left (make-bst :value 1)
                                   :right (make-bst :value 3
                                                    :right (make-bst :value 4)))
-                        (bst-from-values '(2 1 3 4))))
+                        (bst-from-values #(2 1 3 4))))
   (let* ((*bst-copy-function* #'copy-seq)
          (*bst-equal-p-function* #'string=)
          (*bst-lesser-p-function* #'string<))
@@ -162,6 +162,23 @@
                                     :right (make-bst :value "xyz"
                                                      :left (make-bst :value "ijk")))
                           (bst-from-values '("def" "abc" "xyz" "ijk"))))))
+
+(test bst-from-sorted-values
+  (is (bst-tree-equal-p (make-bst :value 3
+                                  :left (make-bst :value 2
+                                                  :left (make-bst :value 1))
+                                  :right (make-bst :value 4))
+                        (bst-from-sorted-values #(1 2 3 4))))
+  (is (bst-tree-equal-p (bst-balance! (bst-from-values #(2 1 9 8 7 6 5 4 3)))
+                        (bst-from-sorted-values #(1 2 3 4 5 6 7 8 9))))
+  (let* ((*bst-copy-function* #'copy-seq)
+         (*bst-equal-p-function* #'string=)
+         (*bst-lesser-p-function* #'string<))
+    (is (bst-tree-equal-p (make-bst :value "ijk"
+                                    :left (make-bst :value "def"
+                                                    :left (make-bst :value "abc"))
+                                    :right (make-bst :value "xyz"))
+                          (bst-from-sorted-values #("abc" "def" "ijk" "xyz"))))))
 
 (test bst-values-equal-p
   (is (bst-values-equal-p (bst-from-values '(1 2 5 4 3))

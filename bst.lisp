@@ -17,6 +17,7 @@
            #:bst-empty-p
            #:bst-equal-p
            #:bst-from-values
+           #:bst-from-sorted-values
            #:bst-lesser-p
            #:bst-max-depth
            #:bst-max-value
@@ -214,8 +215,20 @@ otherwise return NIL and NIL."
 (defun bst-from-values (values)
   "Make a tree from a sequence of values."
   (let ((tree +bst-empty+))
-    (dotimes (i (length values) tree)
-      (setf tree (bst-add! tree (elt values i))))))
+    (map nil (lambda (value) (setf tree (bst-add! tree value))) values)
+    tree))
+
+(defun bst-from-sorted-values (values)
+  "Make a balanced tree from a vector of sorted values."
+  (labels ((insert-values (tree values start end)
+             (if (= start end)
+                 tree
+                 (let* ((middle (+ start (floor (- end start) 2)))
+                        (median (aref values middle))
+                        (tree (bst-add! tree median))
+                        (tree (insert-values tree values start middle)))
+                   (insert-values tree values (1+ middle) end)))))
+    (insert-values +bst-empty+ values 0 (length values))))
 
 (defun bst-values-equal-p (tree1 tree2)
   "Return T if TREE1 and TREE2 contain the same values, and NIL otherwise."
@@ -226,16 +239,7 @@ otherwise return NIL and NIL."
 
 (defun bst-balance! (tree)
   "Balance a TREE. The TREE argument is destroyed."
-  (labels ((insert-values (tree values start end)
-             (if (= start end)
-                 tree
-                 (let* ((middle (+ start (floor (- end start) 2)))
-                        (median (aref values middle))
-                        (tree (bst-add! tree median))
-                        (tree (insert-values tree values start middle)))
-                   (insert-values tree values (1+ middle) end)))))
-    (let ((values (bst-values tree)))
-      (insert-values +bst-empty+ values 0 (length values)))))
+  (bst-from-sorted-values (bst-values tree)))
 
 (defun bst-balance (tree)
   "Balance a TREE."
