@@ -13,6 +13,7 @@
 
 (in-suite bst-unit-tests)
 
+(declaim (notinline bst-equal-p))
 
 (test bst-empty-p
   (is-true (bst-empty-p +bst-empty+))
