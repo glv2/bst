@@ -214,9 +214,7 @@ otherwise return NIL and NIL."
 
 (defun bst-from-values (values)
   "Make a tree from a sequence of values."
-  (let ((tree +bst-empty+))
-    (map nil (lambda (value) (setf tree (bst-add! tree value))) values)
-    tree))
+  (reduce #'bst-add! values :initial-value +bst-empty+))
 
 (defun bst-from-sorted-values (values)
   "Make a balanced tree from a vector of sorted values."
