@@ -12,7 +12,7 @@
   :components ((:file "bst")))
 
 (defsystem "bst/test"
-  :depends-on ("bst" "fiveam")
+  :depends-on ("alexandria" "bst" "fiveam")
   :version "1.0"
   :in-order-to ((test-op (load-op "bst/test")))
   :perform (test-op (o s)

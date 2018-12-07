@@ -3,7 +3,7 @@
 ;;; This library is free software released under the GNU GPL-3 license.
 
 (defpackage :bst/test
-  (:use :cl :bst :fiveam)
+  (:use :cl :alexandria :bst :fiveam)
   (:import-from :bst #:make-bst))
 
 (in-package :bst/test)
@@ -73,16 +73,34 @@
 (test bst-max-depth
   (is (= 0 (bst-max-depth +bst-empty+)))
   (is (= 1 (bst-max-depth (bst-from-values '(5)))))
-  (let ((tree (bst-add (bst-add (bst-add (bst-add +bst-empty+ 2) 3) 4) 1)))
+  (let ((tree (bst-from-values '(2 3 4 1))))
+    (is (= 3 (bst-max-depth tree))))
+  (let ((tree (bst-from-values (iota 1000))))
+    (is (= 1000 (bst-max-depth tree))))
+  (let* ((*bst-copy-function* #'copy-seq)
+         (*bst-equal-p-function* #'string=)
+         (*bst-lesser-p-function* #'string<)
+         (tree (bst-from-values '("def" "abc" "xyz" "ijk"))))
     (is (= 3 (bst-max-depth tree)))))
 
 (test bst-min-depth
   (is (= 0 (bst-min-depth +bst-empty+)))
   (is (= 1 (bst-min-depth (bst-from-values '(5)))))
-  (let ((tree (bst-add (bst-add (bst-add (bst-add +bst-empty+ 2) 3) 4) 1)))
+  (let ((tree (bst-from-values '(2 3 4 1))))
+    (is (= 2 (bst-min-depth tree))))
+  (let ((tree (bst-from-values (iota 1000))))
+    (is (= 1 (bst-min-depth tree))))
+  (let* ((*bst-copy-function* #'copy-seq)
+         (*bst-equal-p-function* #'string=)
+         (*bst-lesser-p-function* #'string<)
+         (tree (bst-from-values '("def" "abc" "xyz" "ijk"))))
     (is (= 2 (bst-min-depth tree)))))
 
 (test bst-tree-equal-p
+  (is (bst-tree-equal-p +bst-empty+
+                        (bst-from-values '())))
+  (is (bst-tree-equal-p (bst-from-values '(3))
+                        (bst-from-values '(3))))
   (is (bst-tree-equal-p (bst-from-values '(3 2 1 4 5 6))
                         (bst-from-values '(3 2 1 4 5 6))))
   (is-false (bst-tree-equal-p (bst-from-values '(3 2 1 4 5 6))
@@ -91,6 +109,7 @@
                               (bst-from-values '(3 1 2 4 5 6)))))
 
 (test bst-tree-copy
+  (is (bst-tree-equal-p +bst-empty+ (bst-tree-copy +bst-empty+)))
   (let ((tree (bst-from-values '(3 2 1 4 5 6 7 8 9))))
     (is (bst-tree-equal-p tree (bst-tree-copy tree))))
   (let* ((*bst-copy-function* #'copy-seq)
@@ -150,6 +169,7 @@
       (is (vector-equal #("abc" "def" "ijk" "xyz") (bst-values tree))))))
 
 (test bst-from-values
+  (is (bst-empty-p (bst-from-values '())))
   (is (bst-tree-equal-p (make-bst :value 2
                                   :left (make-bst :value 1)
                                   :right (make-bst :value 3
@@ -165,6 +185,7 @@
                           (bst-from-values '("def" "abc" "xyz" "ijk"))))))
 
 (test bst-from-sorted-values
+  (is (bst-empty-p (bst-from-sorted-values #())))
   (is (bst-tree-equal-p (make-bst :value 3
                                   :left (make-bst :value 2
                                                   :left (make-bst :value 1))
@@ -182,6 +203,8 @@
                           (bst-from-sorted-values #("abc" "def" "ijk" "xyz"))))))
 
 (test bst-values-equal-p
+  (is (bst-values-equal-p (bst-from-values '(1 2 3 4))
+                          (bst-from-values '(4 3 2 1))))
   (is (bst-values-equal-p (bst-from-values '(1 2 5 4 3))
                           (bst-from-values '(3 1 2 4 5))))
   (let* ((*bst-copy-function* #'copy-seq)
@@ -203,6 +226,9 @@
                                                    :left (make-bst :value 5)
                                                    :right (make-bst :value 7)))
                         (bst-balance (bst-from-values '(1 2 3 7 6 4 5)))))
+  (let ((tree (bst-balance (bst-from-values (iota 1000)))))
+    (is (= 9 (bst-min-depth tree)))
+    (is (= 10 (bst-max-depth tree))))
   (let ((*bst-copy-function* #'copy-seq)
         (*bst-equal-p-function* #'string=)
         (*bst-lesser-p-function* #'string<))
