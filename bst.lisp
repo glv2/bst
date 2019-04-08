@@ -1,5 +1,5 @@
 ;;; This library implements a binary search tree.
-;;; Copyright 2017-2018 Guillaume LE VAILLANT
+;;; Copyright 2017-2019 Guillaume LE VAILLANT
 ;;; This library is free software released under the GNU GPL-3 license.
 
 (defpackage :bst
@@ -90,9 +90,12 @@ lesser than another.")
   "If VALUE it is present in TREE, return VALUE and T,
 otherwise return NIL and NIL."
   (if (and (not (bst-empty-p tree))
-           (or (bst-equal-p value (bst-value tree))
-               (nth-value 1 (bst-search (bst-left tree) value))
-               (nth-value 1 (bst-search (bst-right tree) value))))
+           (let ((tree-value (bst-value tree)))
+             (or (bst-equal-p value tree-value)
+                 (let ((child (if (bst-lesser-p value tree-value)
+                                  (bst-left tree)
+                                  (bst-right tree))))
+                     (nth-value 1 (bst-search child value))))))
       (values value t)
       (values nil nil)))
 
