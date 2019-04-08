@@ -91,8 +91,8 @@ lesser than another.")
 otherwise return NIL and NIL."
   (if (and (not (bst-empty-p tree))
            (or (bst-equal-p value (bst-value tree))
-               (bst-search (bst-left tree) value)
-               (bst-search (bst-right tree) value)))
+               (nth-value 1 (bst-search (bst-left tree) value))
+               (nth-value 1 (bst-search (bst-right tree) value))))
       (values value t)
       (values nil nil)))
 
