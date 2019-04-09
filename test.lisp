@@ -1,5 +1,5 @@
 ;;; This library implements a binary search tree.
-;;; Copyright 2017-2018 Guillaume LE VAILLANT
+;;; Copyright 2017-2019 Guillaume LE VAILLANT
 ;;; This library is free software released under the GNU GPL-3 license.
 
 (defpackage :bst/test
@@ -95,6 +95,11 @@
          (*bst-equal-p-function* #'string=)
          (*bst-lesser-p-function* #'string<)
          (tree (bst-from-values '("def" "abc" "xyz" "ijk"))))
+    (is (= 4 (bst-count tree))))
+  (let* ((*bst-copy-function* #'copy-seq)
+         (*bst-equal-p-function* #'equalp)
+         (*bst-lesser-p-function* (lambda (x y) (< (length x) (length y))))
+         (tree (bst-from-values '((1 2 3 4) (5 5 5) (9 8 7 6 5 4) ()))))
     (is (= 4 (bst-count tree)))))
 
 (test bst-max-depth
@@ -108,6 +113,11 @@
          (*bst-equal-p-function* #'string=)
          (*bst-lesser-p-function* #'string<)
          (tree (bst-from-values '("def" "abc" "xyz" "ijk"))))
+    (is (= 3 (bst-max-depth tree))))
+  (let* ((*bst-copy-function* #'copy-seq)
+         (*bst-equal-p-function* #'equalp)
+         (*bst-lesser-p-function* (lambda (x y) (< (length x) (length y))))
+         (tree (bst-from-values '((1 2 3 4) (5 5 5) (9 8 7 6 5 4) ()))))
     (is (= 3 (bst-max-depth tree)))))
 
 (test bst-min-depth
@@ -121,6 +131,11 @@
          (*bst-equal-p-function* #'string=)
          (*bst-lesser-p-function* #'string<)
          (tree (bst-from-values '("def" "abc" "xyz" "ijk"))))
+    (is (= 2 (bst-min-depth tree))))
+  (let* ((*bst-copy-function* #'copy-seq)
+         (*bst-equal-p-function* #'equalp)
+         (*bst-lesser-p-function* (lambda (x y) (< (length x) (length y))))
+         (tree (bst-from-values '((1 2 3 4) (5 5 5) (9 8 7 6 5 4) ()))))
     (is (= 2 (bst-min-depth tree)))))
 
 (test bst-tree-equal-p
@@ -143,6 +158,11 @@
          (*bst-equal-p-function* #'string=)
          (*bst-lesser-p-function* #'string<)
          (tree (bst-from-values '("def" "abc" "xyz" "ijk"))))
+    (is (bst-tree-equal-p tree (bst-tree-copy tree))))
+  (let* ((*bst-copy-function* #'copy-seq)
+         (*bst-equal-p-function* #'equalp)
+         (*bst-lesser-p-function* (lambda (x y) (< (length x) (length y))))
+         (tree (bst-from-values '((1 2 3 4) (5 5 5) (9 8 7 6 5 4) ()))))
     (is (bst-tree-equal-p tree (bst-tree-copy tree)))))
 
 (test bst-add
@@ -161,7 +181,13 @@
          (*bst-lesser-p-function* #'string<)
          (tree (bst-from-values '("def" "abc" "xyz" "ijk"))))
     (is (bst-tree-equal-p tree (bst-add tree "abc")))
-    (is (= 5 (bst-count (bst-add tree "uvw"))))))
+    (is (= 5 (bst-count (bst-add tree "uvw")))))
+  (let* ((*bst-copy-function* #'copy-seq)
+         (*bst-equal-p-function* #'equalp)
+         (*bst-lesser-p-function* (lambda (x y) (< (length x) (length y))))
+         (tree (bst-from-values '((1 2 3 4) (5 5 5) (9 8 7 6 5 4) ()))))
+    (is (bst-tree-equal-p tree (bst-add tree '(5 5 5))))
+    (is (= 5 (bst-count (bst-add tree '(0)))))))
 
 (test bst-remove
   (is-true (bst-empty-p (bst-remove +bst-empty+ 10)))
@@ -180,7 +206,13 @@
          (*bst-lesser-p-function* #'string<)
          (tree (bst-from-values '("def" "abc" "xyz" "ijk"))))
     (is (= 3 (bst-count (bst-remove tree "xyz"))))
-    (is (bst-tree-equal-p tree (bst-remove tree "uvw")))))
+    (is (bst-tree-equal-p tree (bst-remove tree "uvw"))))
+  (let* ((*bst-copy-function* #'copy-seq)
+         (*bst-equal-p-function* #'equalp)
+         (*bst-lesser-p-function* (lambda (x y) (< (length x) (length y))))
+         (tree (bst-from-values '((1 2 3 4) (5 5 5) (9 8 7 6 5 4) ()))))
+    (is (= 3 (bst-count (bst-remove tree '(5 5 5)))))
+    (is (bst-tree-equal-p tree (bst-remove tree '(2 2))))))
 
 (test bst-values
   (flet ((vector-equal (v1 v2)
@@ -193,7 +225,12 @@
            (*bst-equal-p-function* #'string=)
            (*bst-lesser-p-function* #'string<)
            (tree (bst-from-values '("def" "abc" "xyz" "ijk"))))
-      (is (vector-equal #("abc" "def" "ijk" "xyz") (bst-values tree))))))
+      (is (vector-equal #("abc" "def" "ijk" "xyz") (bst-values tree))))
+    (let* ((*bst-copy-function* #'copy-seq)
+           (*bst-equal-p-function* #'equalp)
+           (*bst-lesser-p-function* (lambda (x y) (< (length x) (length y))))
+           (tree (bst-from-values '((1 2 3 4) (5 5 5) (9 8 7 6 5 4) ()))))
+      (is (vector-equal #(() (5 5 5) (1 2 3 4) (9 8 7 6 5 4)) (bst-values tree))))))
 
 (test bst-from-values
   (is (bst-empty-p (bst-from-values '())))
@@ -209,7 +246,15 @@
                                     :left (make-bst :value "abc")
                                     :right (make-bst :value "xyz"
                                                      :left (make-bst :value "ijk")))
-                          (bst-from-values '("def" "abc" "xyz" "ijk"))))))
+                          (bst-from-values '("def" "abc" "xyz" "ijk")))))
+  (let* ((*bst-copy-function* #'copy-seq)
+         (*bst-equal-p-function* #'equalp)
+         (*bst-lesser-p-function* (lambda (x y) (< (length x) (length y)))))
+    (is (bst-tree-equal-p (make-bst :value '(1 2 3 4)
+                                    :left (make-bst :value '(5 5 5)
+                                                    :left (make-bst :value '()))
+                                    :right (make-bst :value '(9 8 7 6 5 4)))
+                          (bst-from-values '((1 2 3 4) (5 5 5) (9 8 7 6 5 4) ()))))))
 
 (test bst-from-sorted-values
   (is (bst-empty-p (bst-from-sorted-values #())))
@@ -227,7 +272,15 @@
                                     :left (make-bst :value "def"
                                                     :left (make-bst :value "abc"))
                                     :right (make-bst :value "xyz"))
-                          (bst-from-sorted-values #("abc" "def" "ijk" "xyz"))))))
+                          (bst-from-sorted-values #("abc" "def" "ijk" "xyz")))))
+  (let* ((*bst-copy-function* #'copy-seq)
+         (*bst-equal-p-function* #'equalp)
+         (*bst-lesser-p-function* (lambda (x y) (< (length x) (length y)))))
+    (is (bst-tree-equal-p (make-bst :value '(1 2 3 4)
+                                    :left (make-bst :value '(5 5 5)
+                                                    :left (make-bst :value '()))
+                                    :right (make-bst :value '(9 8 7 6 5 4)))
+                          (bst-from-sorted-values #(() (5 5 5) (1 2 3 4) (9 8 7 6 5 4)))))))
 
 (test bst-values-equal-p
   (is (bst-values-equal-p (bst-from-values '(1 2 3 4))
