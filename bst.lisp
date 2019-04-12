@@ -222,15 +222,14 @@ otherwise return NIL and NIL."
 
 (defun bst-from-sorted-values (values)
   "Make a balanced tree from a vector of sorted values."
-  (labels ((insert-values (tree values start end)
+  (labels ((make-tree (values start end)
              (if (= start end)
-                 tree
-                 (let* ((middle (+ start (floor (- end start) 2)))
-                        (median (aref values middle))
-                        (tree (bst-add! tree median))
-                        (tree (insert-values tree values start middle)))
-                   (insert-values tree values (1+ middle) end)))))
-    (insert-values +bst-empty+ values 0 (length values))))
+                 +bst-empty+
+                 (let ((middle (+ start (floor (- end start) 2))))
+                   (make-bst :value (aref values middle)
+                             :left (make-tree values start middle)
+                             :right (make-tree values (1+ middle) end))))))
+    (make-tree values 0 (length values))))
 
 (defun bst-values-equal-p (tree1 tree2)
   "Return T if TREE1 and TREE2 contain the same values, and NIL otherwise."
