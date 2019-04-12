@@ -1,6 +1,6 @@
 #+TITLE: BST
 #+AUTHOR: Guillaume LE VAILLANT
-#+DATE: 2018-12-02
+#+DATE: 2019-04-12
 #+EMAIL: glv@posteo.net
 #+LANGUAGE: en
 #+OPTIONS: num:nil toc:nil html-postamble:nil html-scripts:nil
@@ -24,35 +24,32 @@ To work with another type of values, the parameters
 ~*bst-copy-function*~, ~*bst-equal-p-function*~ and
 ~*bst-lesser-p-function*~ must be set or bound.
 
-~*bst-copy-function*~ should be a function to use instead of
-~identity~ to make a copy of a value.
+~*bst-copy-function*~ must be a function used to make a copy of a value
+(~identity~ by default).
 
-~*bst-equal-p-function*~ should be a function to use instead of ~=~ to
-check if two values of a tree are equal.
+~*bst-equal-p-function*~ must be a function used to check if two values of
+a tree are equal (~=~ by default).
 
-~*bst-lesser-p-function*~ should be a function to use instead ot ~<~
-to check if a value of a tree is lesser than another.
+~*bst-lesser-p-function*~ must be a function used to check if a value of a tree
+is lesser than another (~<~ by default).
 
 #+BEGIN_SRC lisp
 (bst-copy value) => value
 #+END_SRC
 
-Make a copy of /value/ using ~*bst-copy-function*~ if defined or
-~identity~ otherwise.
+Make a copy of /value/ using ~*bst-copy-function*~.
 
 #+BEGIN_SRC lisp
 (bst-equal-p value1 value2) => boolean
 #+END_SRC
 
-Check if /value1/ and /value2/ are equal using
-~*bst-equal-p-function*~ if defined or ~=~ otherwise.
+Check if /value1/ and /value2/ are equal using ~*bst-equal-p-function*~.
 
 #+BEGIN_SRC lisp
 (bst-lesser-p value1 value2) => boolean
 #+END_SRC
 
-Check if /value1/ is lesser than /value2/ using
-~*bst-lesser-p-function*~ if defined or ~<~ otherwise.
+Check if /value1/ is lesser than /value2/ using ~*bst-lesser-p-function*~.
 
 ** Trees
 

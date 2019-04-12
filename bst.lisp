@@ -34,13 +34,12 @@
 (in-package :bst)
 
 
-(defparameter *bst-copy-function* nil
-  "A function used instead of IDENTITY to copy a value of a tree.")
-(defparameter *bst-equal-p-function* nil
-  "A function used instead of = to check if two values of a tree are equal.")
-(defparameter *bst-lesser-p-function* nil
-  "A function used instead of < to check if a value of a tree is
-lesser than another.")
+(defparameter *bst-copy-function* #'identity
+  "A function used to copy a value of a tree.")
+(defparameter *bst-equal-p-function* #'=
+  "A function used to check if two values of a tree are equal.")
+(defparameter *bst-lesser-p-function* #'<
+  "A function used to check if a value of a tree is lesser than another.")
 (defconstant +bst-empty+ nil
   "An empty tree is represented by NIL.")
 
@@ -52,23 +51,17 @@ lesser than another.")
 (declaim (inline bst-copy))
 (defun bst-copy (value)
   "Return a copy of VALUE."
-  (if (null *bst-copy-function*)
-      value
-      (funcall *bst-copy-function* value)))
+  (funcall *bst-copy-function* value))
 
 (declaim (inline bst-equal-p))
 (defun bst-equal-p (value1 value2)
   "Return T if VALUE1 and VALUE2 are equal, and NIL otherwise."
-  (if (null *bst-equal-p-function*)
-      (= value1 value2)
-      (funcall *bst-equal-p-function* value1 value2)))
+  (funcall *bst-equal-p-function* value1 value2))
 
 (declaim (inline bst-lesser-p))
 (defun bst-lesser-p (value1 value2)
   "Return T if VALUE1 is lesser than VALUE2, and NIL otherwise."
-  (if (null *bst-lesser-p-function*)
-      (< value1 value2)
-      (funcall *bst-lesser-p-function* value1 value2)))
+  (funcall *bst-lesser-p-function* value1 value2))
 
 (declaim (inline bst-empty-p))
 (defun bst-empty-p (tree)
