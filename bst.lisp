@@ -225,7 +225,7 @@ otherwise return NIL and NIL."
   (labels ((make-tree (values start end)
              (if (= start end)
                  +bst-empty+
-                 (let ((middle (+ start (floor (- end start) 2))))
+                 (let ((middle (floor (+ start end) 2)))
                    (make-bst :value (aref values middle)
                              :left (make-tree values start middle)
                              :right (make-tree values (1+ middle) end))))))
