@@ -164,6 +164,14 @@ Return a /vector/ containing the sorted values of a /tree/.
 Check if two trees contain the same values (even if they have
 different structures).
 
+#+BEGIN_SRC lisp
+(bst-map tree function) => nil
+#+END_SRC
+
+Apply a /function/ to each value in a /tree/ in ascending order.
+Note that the results of applying the /function/ to the values are not
+collected. If you need keep them, your /function/ must take care of that.
+
 * Examples
 
 Tree using integer values:

@@ -19,6 +19,7 @@
            #:bst-from-values
            #:bst-from-sorted-values
            #:bst-lesser-p
+           #:bst-map
            #:bst-max-depth
            #:bst-max-value
            #:bst-min-depth
@@ -201,6 +202,13 @@ otherwise return NIL and NIL."
 (defun bst-remove (tree value)
   "Delete a VALUE from a TREE."
   (bst-remove! (bst-tree-copy tree) value))
+
+(defun bst-map (tree function)
+  "Apply a FUNCTION to each value of a TREE in ascending order."
+  (unless (bst-empty-p tree)
+    (bst-map (bst-left tree) function)
+    (funcall function (bst-value tree))
+    (bst-map (bst-right tree) function)))
 
 (defun bst-values (tree)
   "Return all the values of a TREE in a vector."

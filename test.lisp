@@ -214,6 +214,28 @@
     (is (= 3 (bst-count (bst-remove tree '(5 5 5)))))
     (is (bst-tree-equal-p tree (bst-remove tree '(2 2))))))
 
+(test bst-map
+  (flet ((vector-equal (v1 v2)
+           (every #'bst-equal-p v1 v2))
+         (collect (tree)
+           (let ((values '()))
+             (bst-map tree (lambda (value) (push value values)))
+             (nreverse values))))
+    (is (vector-equal #() (collect +bst-empty+)))
+    (is (vector-equal #(1) (collect (bst-from-values '(1)))))
+    (is (vector-equal #(1 2 3 4 5 6)
+                      (collect (bst-from-values '(1 6 2 3 5 4)))))
+    (let* ((*bst-copy-function* #'copy-seq)
+           (*bst-equal-p-function* #'string=)
+           (*bst-lesser-p-function* #'string<)
+           (tree (bst-from-values '("def" "abc" "xyz" "ijk"))))
+      (is (vector-equal #("abc" "def" "ijk" "xyz") (collect tree))))
+    (let* ((*bst-copy-function* #'copy-seq)
+           (*bst-equal-p-function* #'equalp)
+           (*bst-lesser-p-function* (lambda (x y) (< (length x) (length y))))
+           (tree (bst-from-values '((1 2 3 4) (5 5 5) (9 8 7 6 5 4) ()))))
+      (is (vector-equal #(() (5 5 5) (1 2 3 4) (9 8 7 6 5 4)) (collect tree))))))
+
 (test bst-values
   (flet ((vector-equal (v1 v2)
            (every #'bst-equal-p v1 v2)))
