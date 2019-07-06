@@ -127,6 +127,22 @@ empty. The second returned value is ~nil~ if the /tree/ is empty
 and ~t~ otherwise.
 
 #+BEGIN_SRC lisp
+(bst-search-max-value-below tree value) => value, value-p
+#+END_SRC
+
+Search the maximum value in a /tree/ that is lesser than a given /value/. If
+such a value is found, the function returns it and ~t~. Otherwise the function
+returns ~nil~ and ~nil~.
+
+#+BEGIN_SRC lisp
+(bst-search-min-value-above tree value) => value, value-p
+#+END_SRC
+
+Search the minimum value in a /tree/ that is greater than a given /value/. If
+such a value is found, the function returns it and ~t~. Otherwise the function
+returns ~nil~ and ~nil~.
+
+#+BEGIN_SRC lisp
 (bst-count tree) => integer
 #+END_SRC
 

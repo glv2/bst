@@ -27,6 +27,8 @@
            #:bst-remove
            #:bst-remove!
            #:bst-search
+           #:bst-search-max-value-below
+           #:bst-search-min-value-above
            #:bst-tree-copy
            #:bst-tree-equal-p
            #:bst-values
@@ -107,6 +109,20 @@ otherwise return NIL and NIL."
         (values nil nil)
         (values (max-value tree) t))))
 
+(defun bst-search-max-value-below (tree value)
+  "Search the maximum value in TREE lesser that VALUE. If such a value is
+found, return it and T, otherwise return NIL and NIL."
+  (labels ((search-value (tree value max max-p)
+             (if (bst-empty-p tree)
+                 (if max-p
+                     (values max t)
+                     (values nil nil))
+                 (let ((tree-value (bst-value tree)))
+                   (if (bst-lesser-p tree-value value)
+                       (search-value (bst-right tree) value tree-value t)
+                       (search-value (bst-left tree) value max max-p))))))
+    (search-value tree value nil nil)))
+
 (defun bst-min-value (tree)
   "If TREE is not empty, return its minimum value and T,
 otherwise return NIL and NIL."
@@ -118,6 +134,20 @@ otherwise return NIL and NIL."
     (if (bst-empty-p tree)
         (values nil nil)
         (values (min-value tree) t))))
+
+(defun bst-search-min-value-above (tree value)
+  "Search the minimum value in TREE greater that VALUE. If such a value is
+found, return it and T, otherwise return NIL and NIL."
+  (labels ((search-value (tree value min min-p)
+             (if (bst-empty-p tree)
+                 (if min-p
+                     (values min t)
+                     (values nil nil))
+                 (let ((tree-value (bst-value tree)))
+                   (if (bst-lesser-p value tree-value)
+                       (search-value (bst-left tree) value tree-value t)
+                       (search-value (bst-right tree) value min min-p))))))
+    (search-value tree value nil nil)))
 
 (defun bst-count (tree)
   "Return the number of nodes in a TREE."
