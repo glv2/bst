@@ -83,7 +83,7 @@
              (bst-tree-equal-p (bst-right tree1) (bst-right tree2))))))
 
 (defun bst-search (tree value)
-  "If VALUE it is present in TREE, return VALUE and T,
+  "If VALUE is present in TREE, return VALUE and T,
 otherwise return NIL and NIL."
   (labels ((search-value (tree value)
              (unless (bst-empty-p tree)
