@@ -1,5 +1,5 @@
 ;;; This library implements a binary search tree.
-;;; Copyright 2017-2019 Guillaume LE VAILLANT
+;;; Copyright 2017-2020 Guillaume LE VAILLANT
 ;;; This library is free software released under the GNU GPL-3 license.
 
 (defpackage :bst
@@ -201,7 +201,20 @@ found, return it and T, otherwise return NIL and NIL."
 
 (defun bst-add (tree value)
   "Insert a VALUE in a TREE."
-  (bst-add! (bst-tree-copy tree) (bst-copy value)))
+  (if (bst-empty-p tree)
+      (make-bst :value value)
+      (let ((tree-value (bst-value tree)))
+        (if (bst-equal-p value tree-value)
+            tree
+            (let ((left (bst-left tree))
+                  (right (bst-right tree)))
+              (if (bst-lesser-p value tree-value)
+                  (make-bst :value tree-value
+                            :left (bst-add left value)
+                            :right right)
+                  (make-bst :value tree-value
+                            :left left
+                            :right (bst-add right value))))))))
 
 (defun bst-remove! (tree value)
   "Delete a VALUE from a TREE. The TREE argument is destroyed."
@@ -231,7 +244,29 @@ found, return it and T, otherwise return NIL and NIL."
 
 (defun bst-remove (tree value)
   "Delete a VALUE from a TREE."
-  (bst-remove! (bst-tree-copy tree) value))
+  (if (bst-empty-p tree)
+      +bst-empty+
+      (let* ((tree-value (bst-value tree))
+             (left (bst-left tree))
+             (right (bst-right tree)))
+        (if (bst-equal-p value tree-value)
+            (cond
+              ((bst-empty-p left)
+               right)
+              ((bst-empty-p right)
+               left)
+              (t
+               (let ((min-value (bst-min-value right)))
+                 (make-bst :value min-value
+                           :left left
+                           :right (bst-remove right min-value)))))
+            (if (bst-lesser-p value tree-value)
+                (make-bst :value tree-value
+                          :left (bst-remove left value)
+                          :right right)
+                (make-bst :value tree-value
+                          :left left
+                          :right (bst-remove right value)))))))
 
 (defun bst-map (tree function)
   "Apply a FUNCTION to each value of a TREE in ascending order."
@@ -276,10 +311,6 @@ found, return it and T, otherwise return NIL and NIL."
     (and (= (length values1) (length values2))
          (every #'bst-equal-p values1 values2))))
 
-(defun bst-balance! (tree)
-  "Balance a TREE. The TREE argument is destroyed."
-  (bst-from-sorted-values (bst-values tree)))
-
 (defun bst-balance (tree)
   "Balance a TREE."
-  (bst-balance! (bst-tree-copy tree)))
+  (bst-from-sorted-values (bst-values tree)))

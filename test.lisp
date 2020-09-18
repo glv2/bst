@@ -1,5 +1,5 @@
 ;;; This library implements a binary search tree.
-;;; Copyright 2017-2019 Guillaume LE VAILLANT
+;;; Copyright 2017-2020 Guillaume LE VAILLANT
 ;;; This library is free software released under the GNU GPL-3 license.
 
 (defpackage :bst/test
@@ -221,6 +221,30 @@
          (tree (bst-from-values '((1 2 3 4) (5 5 5) (9 8 7 6 5 4) ()))))
     (is (bst-tree-equal-p tree (bst-tree-copy tree)))))
 
+(test bst-add!
+  (is (bst-tree-equal-p (make-bst :value 1)
+                        (bst-add! +bst-empty+ 1)))
+  (is (bst-tree-equal-p (make-bst :value 2
+                                  :left (make-bst :value 1))
+                        (bst-add! (bst-add! +bst-empty+ 2) 1)))
+  (is (bst-tree-equal-p (make-bst :value 2
+                                  :left (make-bst :value 1)
+                                  :right (make-bst :value 3))
+                        (bst-add! (bst-add! (bst-add! +bst-empty+ 2) 1) 3)))
+  (is (= 6 (bst-count (bst-add! (bst-from-values '(4 2 5 3 1 6)) 5))))
+  (let* ((*bst-copy-function* #'copy-seq)
+         (*bst-equal-p-function* #'string=)
+         (*bst-lesser-p-function* #'string<)
+         (tree (bst-from-values '("def" "abc" "xyz" "ijk"))))
+    (is (bst-tree-equal-p tree (bst-add! tree "abc")))
+    (is (= 5 (bst-count (bst-add! tree "uvw")))))
+  (let* ((*bst-copy-function* #'copy-seq)
+         (*bst-equal-p-function* #'equalp)
+         (*bst-lesser-p-function* (lambda (x y) (< (length x) (length y))))
+         (tree (bst-from-values '((1 2 3 4) (5 5 5) (9 8 7 6 5 4) ()))))
+    (is (bst-tree-equal-p tree (bst-add! tree '(5 5 5))))
+    (is (= 5 (bst-count (bst-add! tree '(0)))))))
+
 (test bst-add
   (is (bst-tree-equal-p (make-bst :value 1)
                         (bst-add +bst-empty+ 1)))
@@ -244,6 +268,31 @@
          (tree (bst-from-values '((1 2 3 4) (5 5 5) (9 8 7 6 5 4) ()))))
     (is (bst-tree-equal-p tree (bst-add tree '(5 5 5))))
     (is (= 5 (bst-count (bst-add tree '(0)))))))
+
+(test bst-remove!
+  (is-true (bst-empty-p (bst-remove! +bst-empty+ 10)))
+  (is-true (bst-empty-p (bst-remove! (bst-add +bst-empty+ 10) 10)))
+  (is (bst-tree-equal-p (make-bst :value 2
+                                  :right (make-bst :value 3))
+                        (bst-remove! (bst-from-values '(2 1 3)) 1)))
+  (is (bst-tree-equal-p (make-bst :value 2
+                                  :left (make-bst :value 1))
+                        (bst-remove! (bst-from-values '(2 1 3)) 3)))
+  (is (bst-tree-equal-p (make-bst :value 3
+                                  :left (make-bst :value 1))
+                        (bst-remove! (bst-from-values '(2 1 3)) 2)))
+  (let* ((*bst-copy-function* #'copy-seq)
+         (*bst-equal-p-function* #'string=)
+         (*bst-lesser-p-function* #'string<)
+         (tree (bst-from-values '("def" "abc" "xyz" "ijk"))))
+    (is (= 3 (bst-count (bst-remove! tree "xyz"))))
+    (is (bst-tree-equal-p tree (bst-remove! tree "uvw"))))
+  (let* ((*bst-copy-function* #'copy-seq)
+         (*bst-equal-p-function* #'equalp)
+         (*bst-lesser-p-function* (lambda (x y) (< (length x) (length y))))
+         (tree (bst-from-values '((1 2 3 4) (5 5 5) (9 8 7 6 5 4) ()))))
+    (is (= 3 (bst-count (bst-remove! tree '(5 5 5)))))
+    (is (bst-tree-equal-p tree (bst-remove! tree '(2 2))))))
 
 (test bst-remove
   (is-true (bst-empty-p (bst-remove +bst-empty+ 10)))
@@ -342,7 +391,7 @@
                                                   :left (make-bst :value 1))
                                   :right (make-bst :value 4))
                         (bst-from-sorted-values #(1 2 3 4))))
-  (is (bst-tree-equal-p (bst-balance! (bst-from-values #(2 1 9 8 7 6 5 4 3)))
+  (is (bst-tree-equal-p (bst-balance (bst-from-values #(2 1 9 8 7 6 5 4 3)))
                         (bst-from-sorted-values #(1 2 3 4 5 6 7 8 9))))
   (let* ((*bst-copy-function* #'copy-seq)
          (*bst-equal-p-function* #'string=)
