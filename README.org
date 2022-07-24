@@ -188,7 +188,7 @@ different structures).
 
 Apply a /function/ to each value in a /tree/ in ascending order.
 Note that the results of applying the /function/ to the values are not
-collected. If you need keep them, your /function/ must take care of that.
+collected. If you need to keep them, your /function/ must take care of that.
 
 * Examples
 
